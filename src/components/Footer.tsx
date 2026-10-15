@@ -8,7 +8,6 @@ interface FooterProps {
   onNavigate: (sectionId: string) => void;
   onOpenLoginModal: () => void;
   onScrollToTop: () => void;
-  onOpenSyncModal: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -16,7 +15,6 @@ export const Footer: React.FC<FooterProps> = ({
   onNavigate,
   onOpenLoginModal,
   onScrollToTop,
-  onOpenSyncModal,
 }) => {
   return (
     <footer id="contact" className="relative bg-[#081a2e] text-slate-300 pt-14 pb-8 border-t border-blue-950">
@@ -101,13 +99,6 @@ export const Footer: React.FC<FooterProps> = ({
               >
                 <span className="text-amber-400">▶</span>
                 <span>Gallery</span>
-              </button>
-              <button
-                onClick={onOpenSyncModal}
-                className="flex items-center gap-1.5 text-slate-400 hover:text-amber-400 transition-colors text-left py-1"
-              >
-                <span className="text-amber-400">▶</span>
-                <span>API Settings</span>
               </button>
             </div>
           </div>

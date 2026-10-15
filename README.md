@@ -1,26 +1,29 @@
-# Motherland Public School - Website (connected to the live School Management System)
+# Motherland Public School - Official Website
 
-This is the GitHub-hosted public homepage for Motherland Public School. It is a
-React + Vite site that pulls its live content (notices, staff, gallery, fee
-structure, admission classes) straight from the existing School Management
-System's Google Sheet, through the Apps Script backend's read-only JSON API
-(`PublicApi.gs`). Logging in here hands off securely to the *same* Apps Script
-dashboard the school already uses - nothing about the login/dashboard changes.
+This is the public homepage for Motherland Public School. It is a React +
+Vite site that pulls its live content (notices, staff, gallery, fee
+structure, admission classes) from the school's management system backend,
+and hands off login securely into the same school dashboard the office
+already uses.
 
-## Run Locally
+## Updating the backend connection
+
+The backend URL is configured in exactly one place in this repo:
+[`src/config.ts`](src/config.ts). There is no setting for it anywhere on the
+live site itself. To point the site at a different backend deployment, edit
+the URL in that file and commit + push to `main` - GitHub Actions rebuilds
+and redeploys automatically (see `.github/workflows/deploy.yml`), no local
+setup required.
+
+## Run locally (optional, for development only)
 
 **Prerequisites:** Node.js
 
-1. Install dependencies:
-   `npm install`
-2. Copy `.env.example` to `.env` and set `VITE_APPS_SCRIPT_URL` to the deployed
-   Apps Script Web App exec URL (same one the school's dashboard uses).
-3. Run the app:
-   `npm run dev`
+1. Install dependencies: `npm install`
+2. Run the app: `npm run dev`
 
 ## Deploy
 
-`npm run build` produces a static `dist/` folder - deploy it to GitHub Pages,
-Netlify, Vercel, or any static host. No server-side code is needed; all data
-comes live from the Apps Script Web App URL configured above (or overridden
-later from the site's own "School Server Connection" admin setting).
+Every push to `main` is built and published automatically by the GitHub
+Actions workflow in `.github/workflows/deploy.yml` - no manual build step or
+local Node.js is needed for normal updates.

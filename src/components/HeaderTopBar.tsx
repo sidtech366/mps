@@ -1,14 +1,12 @@
 import React from 'react';
-import { MapPin, Mail, Phone, Database, Cloud } from 'lucide-react';
+import { MapPin, Mail, Phone } from 'lucide-react';
 import { SchoolConfig } from '../types';
 
 interface HeaderTopBarProps {
   config: SchoolConfig;
-  isLive: boolean;
-  onOpenSyncModal: () => void;
 }
 
-export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ config, isLive, onOpenSyncModal }) => {
+export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ config }) => {
   return (
     <header className="bg-[#0b213f] text-slate-200 text-xs py-2 px-4 sm:px-6 lg:px-8 border-b border-white/10 select-none">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
@@ -83,29 +81,6 @@ export const HeaderTopBar: React.FC<HeaderTopBarProps> = ({ config, isLive, onOp
               </svg>
             </a>
           </div>
-
-          {/* Apps Script & Google Sheet Config Pill */}
-          <button
-            onClick={onOpenSyncModal}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all ${
-              isLive
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 hover:bg-emerald-500/30'
-                : 'bg-amber-500/20 text-amber-300 border border-amber-400/30 hover:bg-amber-500/30'
-            }`}
-            title="Google Sheets & Apps Script Sync Status"
-          >
-            {isLive ? (
-              <>
-                <Cloud className="w-3 h-3 text-emerald-400 animate-pulse" />
-                <span>Sheet Connected (Live)</span>
-              </>
-            ) : (
-              <>
-                <Database className="w-3 h-3 text-amber-400" />
-                <span>Connect Google Sheet API</span>
-              </>
-            )}
-          </button>
         </div>
       </div>
     </header>

@@ -1,7 +1,5 @@
 /**
- * Motherland Public School - Official Dynamic Web Portal
- * Pixel-accurate implementation of the provided design
- * Powered by Google Sheets & Google Apps Script API
+ * Motherland Public School - Official Website
  */
 
 import React, { useState, useEffect } from 'react';
@@ -16,7 +14,6 @@ import { BottomGridSection } from './components/BottomGridSection';
 import { Footer } from './components/Footer';
 
 // Modals
-import { AppsScriptSyncModal } from './components/modals/AppsScriptSyncModal';
 import { AdmissionModal } from './components/modals/AdmissionModal';
 import { LoginPortalModal } from './components/modals/LoginPortalModal';
 import { FeeStructureModal } from './components/modals/FeeStructureModal';
@@ -33,16 +30,13 @@ import {
 
 import { AppData, Leader, NoticeItem, VideoItem, GalleryPhoto, StaffMember } from './types';
 import { defaultSchoolData } from './data/defaultData';
-import { fetchSchoolData, setStoredAppsScriptUrl } from './services/appsScriptService';
+import { fetchSchoolData } from './services/appsScriptService';
 
 export default function App() {
   const [appData, setAppData] = useState<AppData>(defaultSchoolData);
-  const [isLive, setIsLive] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState<string | undefined>(undefined);
   const [activeNav, setActiveNav] = useState('home');
 
   // Modal Visibility States
-  const [syncModalOpen, setSyncModalOpen] = useState(false);
   const [admissionModalOpen, setAdmissionModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [loginRole, setLoginRole] = useState('student');
@@ -63,25 +57,9 @@ export default function App() {
     async function loadData() {
       const res = await fetchSchoolData();
       setAppData(res.data);
-      setIsLive(res.isLive);
-      if (res.isLive) {
-        setLastUpdated(res.data.lastUpdated || new Date().toLocaleTimeString());
-      }
     }
     loadData();
   }, []);
-
-  // Handle Apps Script sync reload
-  const handleSyncSuccess = async (url: string) => {
-    setStoredAppsScriptUrl(url);
-    const res = await fetchSchoolData(url);
-    if (!res.isLive && res.error) {
-      throw new Error(res.error);
-    }
-    setAppData(res.data);
-    setIsLive(res.isLive);
-    setLastUpdated(res.data.lastUpdated || new Date().toLocaleTimeString());
-  };
 
   // Smooth scroll or navigation
   const handleNavigate = (sectionId: string) => {
@@ -147,11 +125,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-slate-50 font-['Plus_Jakarta_Sans',sans-serif]">
       
       {/* 1. Header Top Bar (Navy Blue) */}
-      <HeaderTopBar
-        config={appData.config}
-        isLive={isLive}
-        onOpenSyncModal={() => setSyncModalOpen(true)}
-      />
+      <HeaderTopBar config={appData.config} />
 
       {/* 2. Main Navigation Bar */}
       <Navbar
@@ -229,19 +203,9 @@ export default function App() {
           setLoginModalOpen(true);
         }}
         onScrollToTop={handleScrollToTop}
-        onOpenSyncModal={() => setSyncModalOpen(true)}
       />
 
       {/* ================= MODALS & DRAWERS ================= */}
-
-      {/* Google Sheets & Apps Script Integration Manager */}
-      <AppsScriptSyncModal
-        isOpen={syncModalOpen}
-        onClose={() => setSyncModalOpen(false)}
-        onSyncSuccess={handleSyncSuccess}
-        isLive={isLive}
-        lastUpdated={lastUpdated}
-      />
 
       {/* Online Admission Application Modal */}
       <AdmissionModal
