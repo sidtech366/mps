@@ -1,0 +1,5 @@
+{
+  "name": "Motherland Public School",
+  "description": "Official dynamic web portal for Motherland Public School, connected live to the School Management System via its Apps Script JSON API.",
+  "requestFramePermissions": []
+}
