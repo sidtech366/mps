@@ -28,24 +28,30 @@ export const AdmissionModal: React.FC<AdmissionModalProps> = ({ isOpen, onClose,
   const [submitted, setSubmitted] = useState(false);
   const [inquiryId, setInquiryId] = useState('');
   const [statusMsg, setStatusMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   if (!isOpen) return null;
 
+  // Only shows the "Submitted Successfully" screen (with a real request ID) when the
+  // backend actually confirms the row was written to the ADMISSIONS sheet. On any
+  // failure (bad mobile number, server unreachable, etc.) it shows the real error
+  // instead of pretending the application went through.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg('');
     setLoading(true);
 
     try {
       const result = await submitAdmissionInquiry(formData);
-      const generatedId = `MPS-${Date.now().toString().slice(-6)}`;
-      setInquiryId(generatedId);
-      setStatusMsg(result.message);
-      setSubmitted(true);
+      if (result.success) {
+        setInquiryId(`MPS-${Date.now().toString().slice(-6)}`);
+        setStatusMsg(result.message);
+        setSubmitted(true);
+      } else {
+        setErrorMsg(result.message || 'Could not submit the application. Please check the details and try again.');
+      }
     } catch (err: any) {
-      const generatedId = `MPS-${Date.now().toString().slice(-6)}`;
-      setInquiryId(generatedId);
-      setStatusMsg('Application received! Our admissions desk will call you shortly.');
-      setSubmitted(true);
+      setErrorMsg('Could not reach the school server right now. Please try again or call the school office.');
     } finally {
       setLoading(false);
     }
@@ -65,6 +71,7 @@ export const AdmissionModal: React.FC<AdmissionModalProps> = ({ isOpen, onClose,
       message: '',
     });
     setSubmitted(false);
+    setErrorMsg('');
     onClose();
   };
 
@@ -146,6 +153,12 @@ export const AdmissionModal: React.FC<AdmissionModalProps> = ({ isOpen, onClose,
               <p className="text-xs text-slate-500">
                 Please fill in the student and parent details accurately. Our admission office will verify and reach out within 24 hours.
               </p>
+
+              {errorMsg && (
+                <div className="text-xs text-rose-600 bg-rose-50 p-2.5 rounded-lg border border-rose-200">
+                  {errorMsg}
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 

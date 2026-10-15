@@ -121,3 +121,31 @@ export async function loginRequest(
 export function buildDashboardSsoUrl(token: string): string {
   return `${baseExecUrl(APPS_SCRIPT_EXEC_URL)}?tok=${encodeURIComponent(token)}`;
 }
+
+/**
+ * Forgot-password request (PublicApi.gs doPost action=forgotPassword -> reuses the
+ * school's existing requestPasswordReset()). This does NOT reset the password itself -
+ * it only files a request. The school office approves or rejects it from the
+ * "Password Reset Requests" page in the real dashboard, exactly like it already works
+ * for people who use the "Forgot password?" link inside the Apps Script login page.
+ */
+export async function requestPasswordReset(
+  mobile: string,
+  name: string,
+  newPassword: string
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const res = await fetch(baseExecUrl(APPS_SCRIPT_EXEC_URL), {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'forgotPassword', mobile, name, newPassword }),
+    });
+    const json = await res.json();
+    if (json.status === 'success') {
+      return { success: true, message: json.message || 'Your request has been sent to the school office.' };
+    }
+    return { success: false, message: json.message || 'Could not submit the request.' };
+  } catch (err) {
+    return { success: false, message: 'Could not reach the school server. Please check your internet connection.' };
+  }
+}

@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { ArrowRight, Smartphone, Lock, UserCheck, AlertCircle } from 'lucide-react';
 import { SchoolConfig } from '../types';
+import { loginRequest, buildDashboardSsoUrl } from '../services/appsScriptService';
 
 interface HeroSectionProps {
   config: SchoolConfig;
   onExploreClick: () => void;
-  onLoginSubmit: (mobile: string, role: string) => void;
+  /** Called directly with the ready-to-embed dashboard URL on a successful login - no second modal. */
+  onLoggedIn: (dashboardUrl: string) => void;
+  /** Opens the Login modal straight in its "Forgot Password" view. */
+  onForgotPassword: () => void;
   onContactClick: () => void;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
   config,
   onExploreClick,
-  onLoginSubmit,
+  onLoggedIn,
+  onForgotPassword,
   onContactClick,
 }) => {
   const [mobile, setMobile] = useState('');
@@ -20,7 +25,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  const handleHeroLogin = (e: React.FormEvent) => {
+  // This card IS the real login - most visitors log in from here, so it must log
+  // in directly in one step, not hand off to a second "enter it again" modal.
+  const handleHeroLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!mobile.trim()) {
       setLoginError('Please enter your registered mobile number');
@@ -33,10 +40,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     setLoginError('');
     setLoginLoading(true);
 
-    setTimeout(() => {
-      setLoginLoading(false);
-      onLoginSubmit(mobile, 'Student / Parent / Staff');
-    }, 600);
+    const result = await loginRequest(mobile.trim(), password.trim());
+    setLoginLoading(false);
+
+    if (result.success && result.token) {
+      setMobile(''); setPassword('');
+      onLoggedIn(buildDashboardSsoUrl(result.token));
+      return;
+    }
+    setLoginError(result.message || 'Invalid mobile number or password.');
   };
 
   return (
@@ -162,7 +174,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <div className="pt-2 flex items-center justify-between text-xs font-semibold text-slate-600">
                   <button
                     type="button"
-                    onClick={() => onLoginSubmit('forgot', 'Forgot')}
+                    onClick={onForgotPassword}
                     className="text-blue-600 hover:text-blue-800 hover:underline"
                   >
                     Forgot Password?

@@ -44,10 +44,11 @@ export const DashboardFrame: React.FC<DashboardFrameProps> = ({ url, onClose }) 
     >
       <button
         onClick={onClose}
-        aria-label="Close"
-        className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-[#0c2340] text-white flex items-center justify-center shadow-lg hover:bg-[#13335e] transition-colors"
+        aria-label="Close and return to the website"
+        className="absolute top-3 right-3 z-10 flex items-center gap-1.5 pl-3 pr-2.5 h-9 rounded-full bg-[#0c2340] text-white text-xs font-semibold shadow-lg hover:bg-[#13335e] transition-colors"
       >
-        <X className="w-5 h-5" />
+        <span className="hidden sm:inline">Back to Website</span>
+        <X className="w-4 h-4" />
       </button>
       <iframe
         src={url}

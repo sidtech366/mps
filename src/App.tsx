@@ -41,6 +41,7 @@ export default function App() {
   const [admissionModalOpen, setAdmissionModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [loginRole, setLoginRole] = useState('student');
+  const [loginMode, setLoginMode] = useState<'login' | 'forgot'>('login');
   // Real school dashboard, shown in-page via iframe (never a redirect) once logged in.
   const [dashboardUrl, setDashboardUrl] = useState<string | null>(null);
   const [feeModalOpen, setFeeModalOpen] = useState(false);
@@ -91,14 +92,17 @@ export default function App() {
         break;
       case 'student_login':
         setLoginRole('student');
+        setLoginMode('login');
         setLoginModalOpen(true);
         break;
       case 'parent_login':
         setLoginRole('parent');
+        setLoginMode('login');
         setLoginModalOpen(true);
         break;
       case 'staff_login':
         setLoginRole('staff');
+        setLoginMode('login');
         setLoginModalOpen(true);
         break;
       case 'result':
@@ -118,11 +122,6 @@ export default function App() {
     }
   };
 
-  // Handle Hero Login submission
-  const handleHeroLogin = (mobileOrAction: string, roleName: string) => {
-    setLoginRole(roleName);
-    setLoginModalOpen(true);
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-['Plus_Jakarta_Sans',sans-serif]">
@@ -137,6 +136,7 @@ export default function App() {
         onNavigate={handleNavigate}
         onOpenLoginModal={() => {
           setLoginRole('student');
+          setLoginMode('login');
           setLoginModalOpen(true);
         }}
       />
@@ -146,7 +146,11 @@ export default function App() {
         <HeroSection
           config={appData.config}
           onExploreClick={() => handleNavigate('about')}
-          onLoginSubmit={handleHeroLogin}
+          onLoggedIn={(url) => setDashboardUrl(url)}
+          onForgotPassword={() => {
+            setLoginMode('forgot');
+            setLoginModalOpen(true);
+          }}
           onContactClick={() => handleNavigate('contact')}
         />
 
@@ -203,6 +207,7 @@ export default function App() {
         onNavigate={handleNavigate}
         onOpenLoginModal={() => {
           setLoginRole('student');
+          setLoginMode('login');
           setLoginModalOpen(true);
         }}
         onScrollToTop={handleScrollToTop}
@@ -223,6 +228,7 @@ export default function App() {
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
         initialRole={loginRole}
+        initialMode={loginMode}
         onLoggedIn={(url) => setDashboardUrl(url)}
       />
 
@@ -242,7 +248,7 @@ export default function App() {
         isOpen={onlineFeeModalOpen}
         onClose={() => setOnlineFeeModalOpen(false)}
         schoolName={appData.config.schoolName}
-        onOpenLogin={() => { setLoginRole('student'); setLoginModalOpen(true); }}
+        onOpenLogin={() => { setLoginRole('student'); setLoginMode('login'); setLoginModalOpen(true); }}
       />
 
       {/* Result Verification Modal (requires login - no unauthenticated backend endpoint) */}
@@ -250,7 +256,7 @@ export default function App() {
         isOpen={resultModalOpen}
         onClose={() => setResultModalOpen(false)}
         schoolName={appData.config.schoolName}
-        onOpenLogin={() => { setLoginRole('student'); setLoginModalOpen(true); }}
+        onOpenLogin={() => { setLoginRole('student'); setLoginMode('login'); setLoginModalOpen(true); }}
       />
 
       {/* Download Forms Modal (requires login - no unauthenticated backend endpoint) */}
@@ -258,7 +264,7 @@ export default function App() {
         isOpen={downloadFormsModalOpen}
         onClose={() => setDownloadFormsModalOpen(false)}
         schoolName={appData.config.schoolName}
-        onOpenLogin={() => { setLoginRole('student'); setLoginModalOpen(true); }}
+        onOpenLogin={() => { setLoginRole('student'); setLoginMode('login'); setLoginModalOpen(true); }}
       />
 
       {/* Leader Profile Modal */}
