@@ -12,6 +12,7 @@ import { StaffCarouselSection } from './components/StaffCarouselSection';
 import { GallerySection } from './components/GallerySection';
 import { BottomGridSection } from './components/BottomGridSection';
 import { Footer } from './components/Footer';
+import { DashboardFrame } from './components/DashboardFrame';
 
 // Modals
 import { AdmissionModal } from './components/modals/AdmissionModal';
@@ -40,6 +41,8 @@ export default function App() {
   const [admissionModalOpen, setAdmissionModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [loginRole, setLoginRole] = useState('student');
+  // Real school dashboard, shown in-page via iframe (never a redirect) once logged in.
+  const [dashboardUrl, setDashboardUrl] = useState<string | null>(null);
   const [feeModalOpen, setFeeModalOpen] = useState(false);
   const [onlineFeeModalOpen, setOnlineFeeModalOpen] = useState(false);
   const [resultModalOpen, setResultModalOpen] = useState(false);
@@ -220,7 +223,11 @@ export default function App() {
         isOpen={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
         initialRole={loginRole}
+        onLoggedIn={(url) => setDashboardUrl(url)}
       />
+
+      {/* Real school dashboard - opens in-page via iframe, address bar stays on this site */}
+      <DashboardFrame url={dashboardUrl} onClose={() => setDashboardUrl(null)} />
 
       {/* Fee Structure Modal */}
       <FeeStructureModal

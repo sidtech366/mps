@@ -6,18 +6,21 @@ interface LoginPortalModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialRole?: string;
+  /** Called with the ready-to-embed dashboard URL (?tok=...) on a successful login. */
+  onLoggedIn: (dashboardUrl: string) => void;
 }
 
 /**
- * Real login against the live School Management System (Apps Script backend).
- * On success it hands the issued token straight to the real Apps Script dashboard
- * via a secure SSO redirect (?tok=...), landing the user inside the actual
- * role-based dashboard rather than any fake demo view here.
+ * Real login against the live School Management System backend.
+ * On success it hands the issued token to the parent App, which opens the real
+ * dashboard inside an in-page iframe (never a browser redirect) - the address
+ * bar always stays on this site, so the backend's URL is never exposed.
  */
 export const LoginPortalModal: React.FC<LoginPortalModalProps> = ({
   isOpen,
   onClose,
   initialRole = 'student',
+  onLoggedIn,
 }) => {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
@@ -39,9 +42,12 @@ export const LoginPortalModal: React.FC<LoginPortalModalProps> = ({
     setLoading(false);
 
     if (result.success && result.token) {
-      // Hand the token to the real Apps Script dashboard - same login session the
-      // existing admin/staff/student/parent portals already use.
-      window.location.href = buildDashboardSsoUrl(result.token);
+      // Hand the token up to App, which opens the real dashboard inside an
+      // in-page iframe - same login session the school already uses, but the
+      // browser's address bar never leaves this site.
+      setMobile(''); setPassword('');
+      onClose();
+      onLoggedIn(buildDashboardSsoUrl(result.token));
       return;
     }
 
