@@ -60,7 +60,11 @@ function jsonp<T = any>(url: string, timeoutMs = 10000): Promise<T> {
 export async function fetchSchoolData(): Promise<{ data: AppData; isLive: boolean }> {
   try {
     const fetchUrl = `${baseExecUrl(APPS_SCRIPT_EXEC_URL)}?api=1&action=getAllData&_t=${Date.now()}`;
-    const json = await jsonp<any>(fetchUrl);
+    // getAllData reads several sheets (site sections, staff, notices, fee structure,
+    // classes) in one call, and an Apps Script "cold start" can add several more
+    // seconds on top of that - 10s was cutting it close and timing out the request
+    // under normal load, so it's raised here specifically for this heavier call.
+    const json = await jsonp<any>(fetchUrl, 25000);
 
     if (json.status !== 'success') throw new Error(json.message || 'Invalid response');
 
