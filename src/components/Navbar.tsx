@@ -43,7 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => handleNavClick('home')}
             className="flex items-center gap-3 cursor-pointer group select-none"
           >
-            <SchoolLogo size="lg" className="transition-transform duration-300 group-hover:scale-105" />
+            <SchoolLogo size="lg" logoUrl={config.logoUrl} className="transition-transform duration-300 group-hover:scale-105" />
             <div className="flex flex-col">
               <span className="font-extrabold text-xl sm:text-2xl text-[#0c2340] tracking-tight group-hover:text-blue-900 transition-colors">
                 {config.schoolName}

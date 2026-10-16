@@ -26,7 +26,7 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Column 1: Brand & Bio */}
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center gap-3">
-              <SchoolLogo size="lg" theme="dark" />
+              <SchoolLogo size="lg" theme="dark" logoUrl={config.logoUrl} />
               <div>
                 <h3 className="text-xl font-black text-white tracking-tight">
                   {config.schoolName}

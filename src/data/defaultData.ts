@@ -3,6 +3,7 @@ import { AppData } from '../types';
 export const defaultSchoolData: AppData = {
   config: {
     schoolName: "Motherland Public School",
+    logoUrl: "",
     tagline: "Learn | Grow | Build Your Future",
     address: "Dharnipatti Nebua Raiganj, Uttar Pradesh",
     postalCode: "206244",

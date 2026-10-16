@@ -4,14 +4,26 @@ interface SchoolLogoProps {
   size?: 'sm' | 'md' | 'lg';
   theme?: 'light' | 'dark';
   className?: string;
+  /** The school's own uploaded logo (Settings -> Logo in the admin). When present this is
+   *  shown instead of the generic crest below, so the real school branding appears, not a
+   *  placeholder. */
+  logoUrl?: string;
 }
 
-export const SchoolLogo: React.FC<SchoolLogoProps> = ({ size = 'md', theme = 'light', className = '' }) => {
+export const SchoolLogo: React.FC<SchoolLogoProps> = ({ size = 'md', theme = 'light', className = '', logoUrl }) => {
   const sizeMap = {
     sm: 'w-9 h-9',
     md: 'w-12 h-12',
     lg: 'w-16 h-16'
   };
+
+  if (logoUrl) {
+    return (
+      <div className={`relative flex items-center justify-center shrink-0 rounded-full overflow-hidden bg-white ${sizeMap[size]} ${className}`}>
+        <img src={logoUrl} alt="School Logo" className="w-full h-full object-contain" />
+      </div>
+    );
+  }
 
   return (
     <div className={`relative flex items-center justify-center shrink-0 ${sizeMap[size]} ${className}`}>

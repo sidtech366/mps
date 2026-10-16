@@ -8,6 +8,51 @@ function baseExecUrl(url: string): string {
 }
 
 /**
+ * Loads a GET endpoint via JSONP (a <script> tag, not fetch()). Google Apps Script's
+ * ContentService JSON output does not send Access-Control-Allow-Origin, so a plain
+ * fetch() from a different domain (this GitHub site) gets silently blocked by the
+ * browser even though the backend itself is working fine. A <script> tag is never
+ * subject to CORS, so this is the reliable way to read JSON from an Apps Script web
+ * app across domains. The backend wraps its JSON in `callback(...)` when `?callback=`
+ * is present (see PublicApi.gs).
+ */
+function jsonp<T = any>(url: string, timeoutMs = 10000): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const cbName = 'mpsJsonp_' + Math.random().toString(36).slice(2) + Date.now();
+    const script = document.createElement('script');
+    let settled = false;
+
+    const cleanup = () => {
+      delete (window as any)[cbName];
+      script.remove();
+      clearTimeout(timer);
+    };
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error('Request timed out'));
+    }, timeoutMs);
+
+    (window as any)[cbName] = (data: T) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(data);
+    };
+    script.onerror = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error('Could not load the school server (script error)'));
+    };
+
+    script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${cbName}`;
+    document.head.appendChild(script);
+  });
+}
+
+/**
  * Fetches live data from the real School Management System Apps Script backend
  * (PublicApi.gs -> ?api=1&action=getAllData). Falls back to the bundled demo
  * data if the request fails, so the site never breaks or shows an error state.
@@ -15,21 +60,8 @@ function baseExecUrl(url: string): string {
 export async function fetchSchoolData(): Promise<{ data: AppData; isLive: boolean }> {
   try {
     const fetchUrl = `${baseExecUrl(APPS_SCRIPT_EXEC_URL)}?api=1&action=getAllData&_t=${Date.now()}`;
+    const json = await jsonp<any>(fetchUrl);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-    const res = await fetch(fetchUrl, {
-      method: 'GET',
-      headers: { Accept: 'application/json' },
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const json = await res.json();
     if (json.status !== 'success') throw new Error(json.message || 'Invalid response');
 
     const mergedConfig = { ...defaultSchoolData.config, ...(json.config || {}) };
@@ -48,6 +80,11 @@ export async function fetchSchoolData(): Promise<{ data: AppData; isLive: boolea
 
     return { data: mergedData, isLive: true };
   } catch (err) {
+    // Not shown to visitors anywhere on the page (per the "no connection details visible"
+    // requirement) - only printed to the browser DevTools console, so this can be checked
+    // by opening the real browser's console (F12 / "Inspect") without exposing anything
+    // on the page itself.
+    console.warn('[MPS] Could not load live data from the school server, showing demo content instead:', err);
     return { data: { ...defaultSchoolData, source: 'fallback_local' }, isLive: false };
   }
 }
@@ -132,9 +169,7 @@ export function buildDashboardSsoUrl(token: string): string {
 export async function checkSession(token: string): Promise<boolean> {
   try {
     const fetchUrl = `${baseExecUrl(APPS_SCRIPT_EXEC_URL)}?api=1&action=whoami&token=${encodeURIComponent(token)}&_t=${Date.now()}`;
-    const res = await fetch(fetchUrl, { method: 'GET', headers: { Accept: 'application/json' } });
-    if (!res.ok) return false;
-    const json = await res.json();
+    const json = await jsonp<any>(fetchUrl);
     return !!(json.status === 'success' && json.valid);
   } catch (err) {
     return false;

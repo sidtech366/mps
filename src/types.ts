@@ -1,6 +1,9 @@
 export interface SchoolConfig {
   schoolName: string;
   tagline: string;
+  /** The school's own uploaded logo image (Settings -> Logo). Empty string = use the
+   *  built-in generic crest instead. */
+  logoUrl: string;
   address: string;
   postalCode: string;
   phone: string;
