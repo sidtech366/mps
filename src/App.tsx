@@ -13,12 +13,7 @@ import { GallerySection } from './components/GallerySection';
 import { BottomGridSection } from './components/BottomGridSection';
 import { Footer } from './components/Footer';
 import { DashboardFrame } from './components/DashboardFrame';
-import { HeroSkeleton } from './components/skeletons/HeroSkeleton';
-import { QuickActionBadgesSkeleton } from './components/skeletons/QuickActionBadgesSkeleton';
-import { AboutSkeleton } from './components/skeletons/AboutSkeleton';
-import { StaffCarouselSkeleton } from './components/skeletons/StaffCarouselSkeleton';
-import { GallerySkeleton } from './components/skeletons/GallerySkeleton';
-import { BottomGridSkeleton } from './components/skeletons/BottomGridSkeleton';
+import { PageLoader } from './components/PageLoader';
 
 // Modals
 import { AdmissionModal } from './components/modals/AdmissionModal';
@@ -43,9 +38,9 @@ import { saveSessionToken, loadSessionToken, clearSessionToken } from './service
 export default function App() {
   const [appData, setAppData] = useState<AppData>(defaultSchoolData);
   const [activeNav, setActiveNav] = useState('home');
-  // True until the first real fetchSchoolData() resolves - while true, every section
-  // below shows a matching skeleton instead of the (possibly stale demo) data, so
-  // visitors never see the bundled demo content flash before the live data arrives.
+  // True until the first real fetchSchoolData() resolves - while true, a full-page
+  // branded preloader covers the whole site, so visitors never see the bundled demo
+  // content flash before the live data quietly swaps in underneath.
   const [loading, setLoading] = useState(true);
 
   // Modal Visibility States
@@ -73,7 +68,7 @@ export default function App() {
       const res = await fetchSchoolData();
       setAppData(res.data);
       // Whether the fetch ended up live or fell back to demo data, it's a real,
-      // final state now - stop showing skeletons either way.
+      // final state now - fade the preloader away either way.
       setLoading(false);
     }
     loadData();
@@ -160,7 +155,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-['Plus_Jakarta_Sans',sans-serif]">
-      
+
+      {/* 0. Full-page branded preloader - covers everything until live data is ready,
+          then fades away smoothly (no demo-content flash, no per-section skeletons). */}
+      <PageLoader active={loading} logoUrl={appData.config.logoUrl} schoolName={appData.config.schoolName} />
+
       {/* 1. Header Top Bar (Navy Blue) */}
       <HeaderTopBar config={appData.config} />
 
@@ -178,89 +177,65 @@ export default function App() {
 
       <main className="flex-1">
         {/* 3. Hero Section with Floating Login Widget */}
-        {loading ? (
-          <HeroSkeleton />
-        ) : (
-          <HeroSection
-            config={appData.config}
-            onExploreClick={() => handleNavigate('about')}
-            onLoggedIn={handleLoggedIn}
-            onForgotPassword={() => {
-              setLoginMode('forgot');
-              setLoginModalOpen(true);
-            }}
-            onContactClick={() => handleNavigate('contact')}
-          />
-        )}
+        <HeroSection
+          config={appData.config}
+          onExploreClick={() => handleNavigate('about')}
+          onLoggedIn={handleLoggedIn}
+          onForgotPassword={() => {
+            setLoginMode('forgot');
+            setLoginModalOpen(true);
+          }}
+          onContactClick={() => handleNavigate('contact')}
+        />
 
         {/* 4. Quick Action Badges Bar (Overlapping strip) */}
-        {loading ? (
-          <QuickActionBadgesSkeleton />
-        ) : (
-          <QuickActionBadges onActionClick={handleQuickAction} labels={appData.config.quickLinkLabels} />
-        )}
+        <QuickActionBadges onActionClick={handleQuickAction} labels={appData.config.quickLinkLabels} />
 
         {/* 5. About School & Leadership Section */}
-        {loading ? (
-          <AboutSkeleton />
-        ) : (
-          <AboutSchoolSection
-            config={appData.config}
-            leaders={appData.leaders}
-            onKnowMoreClick={() => handleNavigate('campus')}
-            onViewLeaderProfile={(leader) => setSelectedLeader(leader)}
-          />
-        )}
+        <AboutSchoolSection
+          config={appData.config}
+          leaders={appData.leaders}
+          onKnowMoreClick={() => handleNavigate('campus')}
+          onViewLeaderProfile={(leader) => setSelectedLeader(leader)}
+        />
 
         {/* 6. Dedicated Staff Carousel */}
-        {loading ? (
-          <StaffCarouselSkeleton />
-        ) : (
-          <StaffCarouselSection
-            staffList={appData.staff}
-            config={appData.config}
-            onViewAllStaff={() => {
-              const firstStaff = appData.staff[0];
-              if (firstStaff) setSelectedStaff(firstStaff);
-            }}
-            onSelectStaff={(staff) => setSelectedStaff(staff)}
-          />
-        )}
+        <StaffCarouselSection
+          staffList={appData.staff}
+          config={appData.config}
+          onViewAllStaff={() => {
+            const firstStaff = appData.staff[0];
+            if (firstStaff) setSelectedStaff(firstStaff);
+          }}
+          onSelectStaff={(staff) => setSelectedStaff(staff)}
+        />
 
         {/* 7. Photo Gallery & Video Gallery (2 columns) */}
-        {loading ? (
-          <GallerySkeleton />
-        ) : (
-          <GallerySection
-            photos={appData.photos}
-            videos={appData.videos}
-            config={appData.config}
-            onViewAllPhotos={() => {
-              if (appData.photos.length > 0) setSelectedPhoto(appData.photos[0]);
-            }}
-            onViewAllVideos={() => {
-              if (appData.videos.length > 0) setSelectedVideo(appData.videos[0]);
-            }}
-            onSelectPhoto={(photo) => setSelectedPhoto(photo)}
-            onPlayVideo={(video) => setSelectedVideo(video)}
-          />
-        )}
+        <GallerySection
+          photos={appData.photos}
+          videos={appData.videos}
+          config={appData.config}
+          onViewAllPhotos={() => {
+            if (appData.photos.length > 0) setSelectedPhoto(appData.photos[0]);
+          }}
+          onViewAllVideos={() => {
+            if (appData.videos.length > 0) setSelectedVideo(appData.videos[0]);
+          }}
+          onSelectPhoto={(photo) => setSelectedPhoto(photo)}
+          onPlayVideo={(video) => setSelectedVideo(video)}
+        />
 
         {/* 8. Bottom Grid: Quick Links, Latest Notices, Request for Admission */}
-        {loading ? (
-          <BottomGridSkeleton />
-        ) : (
-          <BottomGridSection
-            notices={appData.notices}
-            config={appData.config}
-            onActionClick={handleQuickAction}
-            onNoticeClick={(notice) => setSelectedNotice(notice)}
-            onViewAllNotices={() => {
-              if (appData.notices.length > 0) setSelectedNotice(appData.notices[0]);
-            }}
-            onApplyAdmission={() => setAdmissionModalOpen(true)}
-          />
-        )}
+        <BottomGridSection
+          notices={appData.notices}
+          config={appData.config}
+          onActionClick={handleQuickAction}
+          onNoticeClick={(notice) => setSelectedNotice(notice)}
+          onViewAllNotices={() => {
+            if (appData.notices.length > 0) setSelectedNotice(appData.notices[0]);
+          }}
+          onApplyAdmission={() => setAdmissionModalOpen(true)}
+        />
       </main>
 
       {/* 9. Comprehensive Footer */}
