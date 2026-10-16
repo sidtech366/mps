@@ -123,6 +123,25 @@ export function buildDashboardSsoUrl(token: string): string {
 }
 
 /**
+ * Checks whether a previously-saved login token is still valid on the backend
+ * (PublicApi.gs ?api=1&action=whoami). Used so that a visitor who is already logged
+ * in lands straight back in the dashboard when they reopen the site - only an actual
+ * logout or an expired session (the backend caches tokens for 6 hours) sends them
+ * back to the homepage/login.
+ */
+export async function checkSession(token: string): Promise<boolean> {
+  try {
+    const fetchUrl = `${baseExecUrl(APPS_SCRIPT_EXEC_URL)}?api=1&action=whoami&token=${encodeURIComponent(token)}&_t=${Date.now()}`;
+    const res = await fetch(fetchUrl, { method: 'GET', headers: { Accept: 'application/json' } });
+    if (!res.ok) return false;
+    const json = await res.json();
+    return !!(json.status === 'success' && json.valid);
+  } catch (err) {
+    return false;
+  }
+}
+
+/**
  * Forgot-password request (PublicApi.gs doPost action=forgotPassword -> reuses the
  * school's existing requestPasswordReset()). This does NOT reset the password itself -
  * it only files a request. The school office approves or rejects it from the

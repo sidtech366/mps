@@ -23,6 +23,23 @@ export interface SchoolConfig {
     instagram: string;
     twitter: string;
   };
+  /** All of these come from the admin's "Main Website" editor (Website.gs CMS) - every
+   *  piece of text/labels an admin can change there is wired through to here, so nothing
+   *  on the live site stays hardcoded/disconnected from what they edit. */
+  galleryBadge: string;
+  galleryTitle: string;
+  staffBadge: string;
+  staffTitle: string;
+  quickLinksTitle: string;
+  noticesTitle: string;
+  admissionBadge: string;
+  admissionTitle: string;
+  admissionBody: string;
+  admissionBtn: string;
+  /** Labels for the 8 quick-action buttons (Admission, Student Login, Parent Login, Staff
+   *  Login, Result, Fee Structure, Online Fee Payment, Download Forms), in that fixed order -
+   *  admin can rename them from "Main Website" -> notices_admission section -> links. */
+  quickLinkLabels: string[];
 }
 
 export interface Leader {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Lock, Smartphone, ShieldCheck, AlertTriangle, CheckCircle2, User, KeyRound } from 'lucide-react';
-import { loginRequest, buildDashboardSsoUrl, requestPasswordReset } from '../../services/appsScriptService';
+import { X, Lock, Smartphone, ShieldCheck, AlertTriangle, CheckCircle2, User, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { loginRequest, requestPasswordReset } from '../../services/appsScriptService';
 
 interface LoginPortalModalProps {
   isOpen: boolean;
@@ -8,8 +8,8 @@ interface LoginPortalModalProps {
   initialRole?: string;
   /** 'login' (default) or 'forgot' - which view the modal opens in. */
   initialMode?: 'login' | 'forgot';
-  /** Called with the ready-to-embed dashboard URL (?tok=...) on a successful login. */
-  onLoggedIn: (dashboardUrl: string) => void;
+  /** Called with the raw session token on a successful login. */
+  onLoggedIn: (token: string) => void;
 }
 
 /**
@@ -32,11 +32,13 @@ export const LoginPortalModal: React.FC<LoginPortalModalProps> = ({
   // Login fields
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Forgot-password fields
   const [fpMobile, setFpMobile] = useState('');
   const [fpName, setFpName] = useState('');
   const [fpPassword, setFpPassword] = useState('');
+  const [showFpPassword, setShowFpPassword] = useState(false);
   const [fpSent, setFpSent] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -71,7 +73,7 @@ export const LoginPortalModal: React.FC<LoginPortalModalProps> = ({
       // browser's address bar never leaves this site.
       setMobile(''); setPassword('');
       onClose();
-      onLoggedIn(buildDashboardSsoUrl(result.token));
+      onLoggedIn(result.token);
       return;
     }
 
@@ -160,12 +162,20 @@ export const LoginPortalModal: React.FC<LoginPortalModalProps> = ({
                 <div className="relative flex items-center">
                   <Lock className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter password"
-                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
+                    className="w-full pl-9 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-2.5 text-slate-400 hover:text-slate-600"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
@@ -263,12 +273,20 @@ export const LoginPortalModal: React.FC<LoginPortalModalProps> = ({
                   <div className="relative flex items-center">
                     <Lock className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
                     <input
-                      type="text"
+                      type={showFpPassword ? 'text' : 'password'}
                       value={fpPassword}
                       onChange={(e) => setFpPassword(e.target.value)}
                       placeholder="New password you want to use"
-                      className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
+                      className="w-full pl-9 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowFpPassword((v) => !v)}
+                      aria-label={showFpPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-2.5 text-slate-400 hover:text-slate-600"
+                    >
+                      {showFpPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
 

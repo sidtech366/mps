@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
 
 interface DashboardFrameProps {
   url: string | null;
@@ -10,6 +9,11 @@ interface DashboardFrameProps {
  * Full-screen in-page frame for the real school dashboard. The dashboard runs
  * inside this iframe rather than a browser redirect, so the address bar always
  * stays on this site and the backend's own URL is never shown to the visitor.
+ *
+ * There is no close button here by design - the phone/browser's own Back
+ * gesture closes it. A history entry is pushed the moment it opens, so Back
+ * pops straight out of the dashboard and back onto the website instead of
+ * leaving the site entirely.
  */
 export const DashboardFrame: React.FC<DashboardFrameProps> = ({ url, onClose }) => {
   const previousFocus = useRef<HTMLElement | null>(null);
@@ -19,6 +23,14 @@ export const DashboardFrame: React.FC<DashboardFrameProps> = ({ url, onClose }) 
     previousFocus.current = document.activeElement as HTMLElement | null;
     document.body.style.overflow = 'hidden';
 
+    try {
+      window.history.pushState({ mpsDashboard: true }, '', window.location.href);
+    } catch (err) {
+      // history API unavailable in some embedded/preview contexts - Escape still works
+    }
+    const onPopState = () => onClose();
+    window.addEventListener('popstate', onPopState);
+
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
@@ -26,6 +38,7 @@ export const DashboardFrame: React.FC<DashboardFrameProps> = ({ url, onClose }) 
 
     return () => {
       document.body.style.overflow = '';
+      window.removeEventListener('popstate', onPopState);
       document.removeEventListener('keydown', onKeyDown);
       if (previousFocus.current && typeof previousFocus.current.focus === 'function') {
         previousFocus.current.focus();
@@ -38,17 +51,10 @@ export const DashboardFrame: React.FC<DashboardFrameProps> = ({ url, onClose }) 
   return (
     <div
       role="dialog"
-      aria-label="School login portal"
+      aria-label="School Management Portal"
       aria-modal="true"
       className="fixed inset-0 z-[100] bg-white"
     >
-      <button
-        onClick={onClose}
-        aria-label="Close"
-        className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-[#0c2340] text-white flex items-center justify-center shadow-lg hover:bg-[#13335e] transition-colors"
-      >
-        <X className="w-5 h-5" />
-      </button>
       <iframe
         src={url}
         title="School Management Portal"

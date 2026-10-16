@@ -1,10 +1,11 @@
 import React from 'react';
 import { ArrowRight, Play } from 'lucide-react';
-import { GalleryPhoto, VideoItem } from '../types';
+import { GalleryPhoto, VideoItem, SchoolConfig } from '../types';
 
 interface GallerySectionProps {
   photos: GalleryPhoto[];
   videos: VideoItem[];
+  config: SchoolConfig;
   onViewAllPhotos: () => void;
   onViewAllVideos: () => void;
   onSelectPhoto: (photo: GalleryPhoto) => void;
@@ -14,6 +15,7 @@ interface GallerySectionProps {
 export const GallerySection: React.FC<GallerySectionProps> = ({
   photos,
   videos,
+  config,
   onViewAllPhotos,
   onViewAllVideos,
   onSelectPhoto,
@@ -36,11 +38,11 @@ export const GallerySection: React.FC<GallerySectionProps> = ({
                   <div className="flex items-center gap-2 mb-1">
                     <span className="w-6 h-1 bg-amber-500 rounded-full"></span>
                     <span className="text-amber-600 font-extrabold tracking-widest text-xs uppercase">
-                      PHOTO GALLERY
+                      {config.galleryBadge}
                     </span>
                   </div>
                   <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0c2340] tracking-tight">
-                    Moments from Our Campus
+                    {config.galleryTitle}
                   </h3>
                 </div>
 

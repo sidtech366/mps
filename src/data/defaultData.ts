@@ -25,7 +25,21 @@ export const defaultSchoolData: AppData = {
       youtube: "https://youtube.com",
       instagram: "https://instagram.com",
       twitter: "https://x.com"
-    }
+    },
+    galleryBadge: "PHOTO GALLERY",
+    galleryTitle: "Moments from Our Campus",
+    staffBadge: "OUR DEDICATED STAFF",
+    staffTitle: "Meet Our Esteemed Staff",
+    quickLinksTitle: "Quick Links",
+    noticesTitle: "Latest Notices",
+    admissionBadge: "Admissions Open 2026-27",
+    admissionTitle: "Request for Admission",
+    admissionBody: "Give your child the best education for a brighter future.",
+    admissionBtn: "Apply Now",
+    quickLinkLabels: [
+      "Admission Request", "Student Login", "Parent Login", "Staff Login",
+      "Result", "Fee Structure", "Online Fee Payment", "Download Forms",
+    ],
   },
   leaders: [
     {

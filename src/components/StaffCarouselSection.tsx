@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight, User } from 'lucide-react';
-import { StaffMember } from '../types';
+import { StaffMember, SchoolConfig } from '../types';
 
 interface StaffCarouselSectionProps {
   staffList: StaffMember[];
+  config: SchoolConfig;
   onViewAllStaff: () => void;
   onSelectStaff: (member: StaffMember) => void;
 }
 
 export const StaffCarouselSection: React.FC<StaffCarouselSectionProps> = ({
   staffList,
+  config,
   onViewAllStaff,
   onSelectStaff,
 }) => {
@@ -42,11 +44,11 @@ export const StaffCarouselSection: React.FC<StaffCarouselSectionProps> = ({
             <div className="flex items-center gap-3 mb-2">
               <span className="w-8 h-1 bg-amber-500 rounded-full"></span>
               <span className="text-amber-600 font-extrabold tracking-widest text-xs uppercase">
-                OUR DEDICATED STAFF
+                {config.staffBadge}
               </span>
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0c2340] tracking-tight">
-              Meet Our Esteemed Staff
+              {config.staffTitle}
             </h2>
           </div>
 

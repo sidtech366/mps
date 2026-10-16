@@ -11,67 +11,28 @@ import {
 
 interface QuickActionBadgesProps {
   onActionClick: (actionKey: string) => void;
+  /** Labels for the 8 buttons below, in this fixed order - comes from the admin's
+   *  "Main Website" editor (notices_admission -> links), falls back to English defaults. */
+  labels?: string[];
 }
 
-export const QuickActionBadges: React.FC<QuickActionBadgesProps> = ({ onActionClick }) => {
-  const actions = [
-    {
-      id: 'admission',
-      label: 'Admission Request',
-      bgColor: 'bg-emerald-600',
-      textColor: 'text-emerald-700',
-      icon: GraduationCap,
-    },
-    {
-      id: 'student_login',
-      label: 'Student Login',
-      bgColor: 'bg-blue-600',
-      textColor: 'text-blue-700',
-      icon: User,
-    },
-    {
-      id: 'parent_login',
-      label: 'Parent Login',
-      bgColor: 'bg-purple-600',
-      textColor: 'text-purple-700',
-      icon: User,
-    },
-    {
-      id: 'staff_login',
-      label: 'Staff Login',
-      bgColor: 'bg-amber-600',
-      textColor: 'text-amber-700',
-      icon: Users,
-    },
-    {
-      id: 'result',
-      label: 'Result',
-      bgColor: 'bg-rose-600',
-      textColor: 'text-rose-700',
-      icon: FileText,
-    },
-    {
-      id: 'fee_structure',
-      label: 'Fee Structure',
-      bgColor: 'bg-emerald-700',
-      textColor: 'text-emerald-800',
-      icon: IndianRupee,
-    },
-    {
-      id: 'online_fee',
-      label: 'Online Fee Payment',
-      bgColor: 'bg-indigo-600',
-      textColor: 'text-indigo-700',
-      icon: CreditCard,
-    },
-    {
-      id: 'download_forms',
-      label: 'Download Forms',
-      bgColor: 'bg-sky-600',
-      textColor: 'text-sky-700',
-      icon: Download,
-    },
+const DEFAULT_LABELS = [
+  'Admission Request', 'Student Login', 'Parent Login', 'Staff Login',
+  'Result', 'Fee Structure', 'Online Fee Payment', 'Download Forms',
+];
+
+export const QuickActionBadges: React.FC<QuickActionBadgesProps> = ({ onActionClick, labels }) => {
+  const actionMeta = [
+    { id: 'admission', bgColor: 'bg-emerald-600', textColor: 'text-emerald-700', icon: GraduationCap },
+    { id: 'student_login', bgColor: 'bg-blue-600', textColor: 'text-blue-700', icon: User },
+    { id: 'parent_login', bgColor: 'bg-purple-600', textColor: 'text-purple-700', icon: User },
+    { id: 'staff_login', bgColor: 'bg-amber-600', textColor: 'text-amber-700', icon: Users },
+    { id: 'result', bgColor: 'bg-rose-600', textColor: 'text-rose-700', icon: FileText },
+    { id: 'fee_structure', bgColor: 'bg-emerald-700', textColor: 'text-emerald-800', icon: IndianRupee },
+    { id: 'online_fee', bgColor: 'bg-indigo-600', textColor: 'text-indigo-700', icon: CreditCard },
+    { id: 'download_forms', bgColor: 'bg-sky-600', textColor: 'text-sky-700', icon: Download },
   ];
+  const actions = actionMeta.map((m, i) => ({ ...m, label: (labels && labels[i]) || DEFAULT_LABELS[i] }));
 
   return (
     <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-10">

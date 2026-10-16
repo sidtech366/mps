@@ -31,7 +31,8 @@ import {
 
 import { AppData, Leader, NoticeItem, VideoItem, GalleryPhoto, StaffMember } from './types';
 import { defaultSchoolData } from './data/defaultData';
-import { fetchSchoolData } from './services/appsScriptService';
+import { fetchSchoolData, buildDashboardSsoUrl, checkSession } from './services/appsScriptService';
+import { saveSessionToken, loadSessionToken, clearSessionToken } from './services/session';
 
 export default function App() {
   const [appData, setAppData] = useState<AppData>(defaultSchoolData);
@@ -64,6 +65,27 @@ export default function App() {
     }
     loadData();
   }, []);
+
+  // If this browser already has a valid login session (saved on a previous visit),
+  // jump straight into the dashboard - no homepage/login needed again. Only an actual
+  // logout or an expired session (backend keeps the token alive for 6 hours) sends the
+  // visitor back to the normal homepage.
+  useEffect(() => {
+    const saved = loadSessionToken();
+    if (!saved) return;
+    checkSession(saved).then((valid) => {
+      if (valid) {
+        setDashboardUrl(buildDashboardSsoUrl(saved));
+      } else {
+        clearSessionToken();
+      }
+    });
+  }, []);
+
+  const handleLoggedIn = (token: string) => {
+    saveSessionToken(token);
+    setDashboardUrl(buildDashboardSsoUrl(token));
+  };
 
   // Smooth scroll or navigation
   const handleNavigate = (sectionId: string) => {
@@ -146,7 +168,7 @@ export default function App() {
         <HeroSection
           config={appData.config}
           onExploreClick={() => handleNavigate('about')}
-          onLoggedIn={(url) => setDashboardUrl(url)}
+          onLoggedIn={handleLoggedIn}
           onForgotPassword={() => {
             setLoginMode('forgot');
             setLoginModalOpen(true);
@@ -155,7 +177,7 @@ export default function App() {
         />
 
         {/* 4. Quick Action Badges Bar (Overlapping strip) */}
-        <QuickActionBadges onActionClick={handleQuickAction} />
+        <QuickActionBadges onActionClick={handleQuickAction} labels={appData.config.quickLinkLabels} />
 
         {/* 5. About School & Leadership Section */}
         <AboutSchoolSection
@@ -168,6 +190,7 @@ export default function App() {
         {/* 6. Dedicated Staff Carousel */}
         <StaffCarouselSection
           staffList={appData.staff}
+          config={appData.config}
           onViewAllStaff={() => {
             const firstStaff = appData.staff[0];
             if (firstStaff) setSelectedStaff(firstStaff);
@@ -179,6 +202,7 @@ export default function App() {
         <GallerySection
           photos={appData.photos}
           videos={appData.videos}
+          config={appData.config}
           onViewAllPhotos={() => {
             if (appData.photos.length > 0) setSelectedPhoto(appData.photos[0]);
           }}
@@ -192,6 +216,7 @@ export default function App() {
         {/* 8. Bottom Grid: Quick Links, Latest Notices, Request for Admission */}
         <BottomGridSection
           notices={appData.notices}
+          config={appData.config}
           onActionClick={handleQuickAction}
           onNoticeClick={(notice) => setSelectedNotice(notice)}
           onViewAllNotices={() => {
@@ -229,7 +254,7 @@ export default function App() {
         onClose={() => setLoginModalOpen(false)}
         initialRole={loginRole}
         initialMode={loginMode}
-        onLoggedIn={(url) => setDashboardUrl(url)}
+        onLoggedIn={handleLoggedIn}
       />
 
       {/* Real school dashboard - opens in-page via iframe, address bar stays on this site */}

@@ -10,33 +10,41 @@ import {
   CreditCard,
   Download,
 } from 'lucide-react';
-import { NoticeItem } from '../types';
+import { NoticeItem, SchoolConfig } from '../types';
 
 interface BottomGridSectionProps {
   notices: NoticeItem[];
+  config: SchoolConfig;
   onActionClick: (actionKey: string) => void;
   onNoticeClick: (notice: NoticeItem) => void;
   onViewAllNotices: () => void;
   onApplyAdmission: () => void;
 }
 
+const DEFAULT_LABELS = [
+  'Admission Request', 'Student Login', 'Parent Login', 'Staff Login',
+  'Result', 'Fee Structure', 'Online Fee Payment', 'Download Forms',
+];
+
 export const BottomGridSection: React.FC<BottomGridSectionProps> = ({
   notices,
+  config,
   onActionClick,
   onNoticeClick,
   onViewAllNotices,
   onApplyAdmission,
 }) => {
-  const quickLinks = [
-    { id: 'admission', label: 'Admission Request', icon: GraduationCap, color: 'text-emerald-600' },
-    { id: 'student_login', label: 'Student Login', icon: User, color: 'text-blue-600' },
-    { id: 'parent_login', label: 'Parent Login', icon: User, color: 'text-purple-600' },
-    { id: 'staff_login', label: 'Staff Login', icon: Users, color: 'text-amber-600' },
-    { id: 'result', label: 'Result', icon: FileText, color: 'text-rose-600' },
-    { id: 'fee_structure', label: 'Fee Structure', icon: IndianRupee, color: 'text-emerald-700' },
-    { id: 'online_fee', label: 'Online Fee Payment', icon: CreditCard, color: 'text-indigo-600' },
-    { id: 'download_forms', label: 'Download Forms', icon: Download, color: 'text-sky-600' },
+  const linkMeta = [
+    { id: 'admission', icon: GraduationCap, color: 'text-emerald-600' },
+    { id: 'student_login', icon: User, color: 'text-blue-600' },
+    { id: 'parent_login', icon: User, color: 'text-purple-600' },
+    { id: 'staff_login', icon: Users, color: 'text-amber-600' },
+    { id: 'result', icon: FileText, color: 'text-rose-600' },
+    { id: 'fee_structure', icon: IndianRupee, color: 'text-emerald-700' },
+    { id: 'online_fee', icon: CreditCard, color: 'text-indigo-600' },
+    { id: 'download_forms', icon: Download, color: 'text-sky-600' },
   ];
+  const quickLinks = linkMeta.map((m, i) => ({ ...m, label: (config.quickLinkLabels && config.quickLinkLabels[i]) || DEFAULT_LABELS[i] }));
 
   return (
     <section id="notices" className="py-16 bg-white border-t border-slate-100">
@@ -47,7 +55,7 @@ export const BottomGridSection: React.FC<BottomGridSectionProps> = ({
           <div className="md:col-span-4 bg-[#0c2340] rounded-2xl p-6 text-white shadow-lg flex flex-col justify-between">
             <div>
               <h3 className="text-xl font-extrabold tracking-tight mb-5 text-white flex items-center gap-2">
-                <span>Quick Links</span>
+                <span>{config.quickLinksTitle}</span>
               </h3>
 
               {/* 4x2 or 2x4 grid of light tiles */}
@@ -88,7 +96,7 @@ export const BottomGridSection: React.FC<BottomGridSectionProps> = ({
                     <Bell className="w-4 h-4 fill-amber-500" />
                   </div>
                   <h3 className="text-xl font-extrabold text-[#0c2340] tracking-tight">
-                    Latest Notices
+                    {config.noticesTitle}
                   </h3>
                 </div>
 
@@ -152,15 +160,15 @@ export const BottomGridSection: React.FC<BottomGridSectionProps> = ({
 
             <div className="relative z-10 max-w-[70%] space-y-3">
               <span className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-[11px] uppercase tracking-wider border border-emerald-400/30">
-                Admissions Open 2026-27
+                {config.admissionBadge}
               </span>
 
               <h3 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
-                Request for Admission
+                {config.admissionTitle}
               </h3>
 
               <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed font-normal">
-                Give your child the best education for a brighter future.
+                {config.admissionBody}
               </p>
             </div>
 
@@ -170,7 +178,7 @@ export const BottomGridSection: React.FC<BottomGridSectionProps> = ({
                 onClick={onApplyAdmission}
                 className="group inline-flex items-center gap-2 bg-[#f59e0b] hover:bg-[#d97706] text-slate-950 font-extrabold text-xs sm:text-sm px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
               >
-                <span>Apply Now</span>
+                <span>{config.admissionBtn}</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </button>
             </div>

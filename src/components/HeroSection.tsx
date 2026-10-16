@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { ArrowRight, Smartphone, Lock, UserCheck, AlertCircle } from 'lucide-react';
+import { ArrowRight, Smartphone, Lock, UserCheck, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { SchoolConfig } from '../types';
-import { loginRequest, buildDashboardSsoUrl } from '../services/appsScriptService';
+import { loginRequest } from '../services/appsScriptService';
 
 interface HeroSectionProps {
   config: SchoolConfig;
   onExploreClick: () => void;
-  /** Called directly with the ready-to-embed dashboard URL on a successful login - no second modal. */
-  onLoggedIn: (dashboardUrl: string) => void;
+  /** Called directly with the raw session token on a successful login - no second modal. */
+  onLoggedIn: (token: string) => void;
   /** Opens the Login modal straight in its "Forgot Password" view. */
   onForgotPassword: () => void;
   onContactClick: () => void;
@@ -22,6 +22,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 }) => {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
@@ -45,7 +46,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
     if (result.success && result.token) {
       setMobile(''); setPassword('');
-      onLoggedIn(buildDashboardSsoUrl(result.token));
+      onLoggedIn(result.token);
       return;
     }
     setLoginError(result.message || 'Invalid mobile number or password.');
@@ -148,12 +149,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   <div className="relative flex items-center">
                     <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none" />
                     <input
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Password"
-                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all"
+                      className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-3 text-slate-400 hover:text-slate-600"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
 
