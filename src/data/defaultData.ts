@@ -2,30 +2,30 @@ import { AppData } from '../types';
 
 export const defaultSchoolData: AppData = {
   config: {
-    schoolName: "Motherland Public School",
+    schoolName: "SidTech",
     logoUrl: "",
     tagline: "Learn | Grow | Build Your Future",
-    address: "Dharnipatti Nebua Raiganj, Uttar Pradesh",
-    postalCode: "206244",
-    phone: "+91-7000000000",
-    email: "info@motherlandschool.in",
+    address: "Boring Road, Patna, Bihar",
+    postalCode: "",
+    phone: "+91-7069492135",
+    email: "",
     coreValues: "Knowledge | Character | Success",
     welcomeIntro: "We provide quality education with modern facilities to help every child grow, learn and achieve their dreams.",
     heroBadge: "WELCOME TO",
-    heroTitle: "Motherland Public School",
+    heroTitle: "SidTech",
     aboutBadge: "ABOUT OUR SCHOOL",
     aboutTitle: "Building Bright Futures Together",
-    aboutDescription: "As Motherland Public School, we are committed to providing quality education, strong values and a safe learning environment for every child. Our mission is to nurture young minds with knowledge, discipline and confidence so they can build a better tomorrow.",
+    aboutDescription: "As SidTech, we are committed to providing quality education, strong values and a safe learning environment for every child. Our mission is to nurture young minds with knowledge, discipline and confidence so they can build a better tomorrow.",
     stats: {
       students: "1000+",
       staff: "50+",
       years: "15+"
     },
     socialLinks: {
-      facebook: "https://facebook.com",
-      youtube: "https://youtube.com",
-      instagram: "https://instagram.com",
-      twitter: "https://x.com"
+      facebook: "",
+      youtube: "",
+      instagram: "",
+      twitter: ""
     },
     galleryBadge: "PHOTO GALLERY",
     galleryTitle: "Moments from Our Campus",
@@ -161,7 +161,7 @@ export const defaultSchoolData: AppData = {
   videos: [
     {
       id: "video-featured",
-      title: "Motherland Public School",
+      title: "SidTech",
       duration: "4:12",
       thumbnailUrl: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1000",
       videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",

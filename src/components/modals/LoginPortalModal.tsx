@@ -10,6 +10,8 @@ interface LoginPortalModalProps {
   initialMode?: 'login' | 'forgot';
   /** Called with the raw session token on a successful login. */
   onLoggedIn: (token: string) => void;
+  /** School's own name (from CMS/config) - shown under the modal title instead of a hardcoded brand. */
+  schoolName?: string;
 }
 
 /**
@@ -26,6 +28,7 @@ export const LoginPortalModal: React.FC<LoginPortalModalProps> = ({
   initialRole = 'student',
   initialMode = 'login',
   onLoggedIn,
+  schoolName,
 }) => {
   const [mode, setMode] = useState<'login' | 'forgot'>(initialMode);
 
@@ -120,7 +123,7 @@ export const LoginPortalModal: React.FC<LoginPortalModalProps> = ({
                 {mode === 'login' ? 'School Management Portal Login' : 'Forgot Password'}
               </h3>
               <p className="text-xs text-slate-300">
-                Motherland Public School ERP
+                {schoolName ? `${schoolName} ERP` : 'School Management Portal'}
               </p>
             </div>
           </div>

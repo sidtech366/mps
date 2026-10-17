@@ -1,5 +1,7 @@
 /**
- * Motherland Public School - Official Website
+ * SidTech - School Management System Website Template
+ * Reusable template: clone this repo, point src/config.ts at a new school's
+ * Apps Script exec URL, and the live Sheet data takes over from here.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -267,6 +269,7 @@ export default function App() {
         initialRole={loginRole}
         initialMode={loginMode}
         onLoggedIn={handleLoggedIn}
+        schoolName={appData.config.schoolName}
       />
 
       {/* Real school dashboard - opens in-page via iframe, address bar stays on this site */}

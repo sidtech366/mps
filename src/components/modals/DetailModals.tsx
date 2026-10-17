@@ -163,7 +163,7 @@ export const VideoPlayerModal: React.FC<{
 
         <div className="p-4 bg-[#081a2e] text-white flex items-center justify-between text-xs">
           <div>
-            <p className="font-semibold text-slate-200">{video.description || 'Motherland Public School Event Video'}</p>
+            <p className="font-semibold text-slate-200">{video.description || 'School Event Video'}</p>
             <span className="text-[11px] text-amber-400">Duration: {video.duration}</span>
           </div>
           <button
