@@ -36,6 +36,7 @@ import { AppData, Leader, NoticeItem, VideoItem, GalleryPhoto, StaffMember } fro
 import { defaultSchoolData } from './data/defaultData';
 import { fetchSchoolData, buildDashboardSsoUrl, checkSession } from './services/appsScriptService';
 import { saveSessionToken, loadSessionToken, clearSessionToken } from './services/session';
+import { loadCachedData, saveCachedData } from './services/dataCache';
 
 export default function App() {
   const [appData, setAppData] = useState<AppData>(defaultSchoolData);
@@ -64,14 +65,25 @@ export default function App() {
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
   const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
 
-  // Fetch data on initial mount
+  // Fetch data on initial mount. Stale-while-revalidate: if a previous visit already
+  // cached real live data in this browser, show it INSTANTLY (no waiting on the
+  // network at all, no full-page loader) and quietly refresh it in the background.
+  // Only a true first-ever visit (nothing cached yet) still waits behind the branded
+  // loader - so a first-time visitor never sees demo content flash into real content,
+  // but every returning visitor gets an instantly-interactive page.
   useEffect(() => {
+    const cached = loadCachedData();
+    if (cached) {
+      setAppData(cached);
+      setLoading(false);
+    }
     async function loadData() {
       const res = await fetchSchoolData();
       setAppData(res.data);
       // Whether the fetch ended up live or fell back to demo data, it's a real,
-      // final state now - fade the preloader away either way.
+      // final state now - fade the preloader away either way (no-op if already hidden).
       setLoading(false);
+      if (res.isLive) saveCachedData(res.data);
     }
     loadData();
   }, []);

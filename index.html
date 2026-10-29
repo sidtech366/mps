@@ -44,6 +44,10 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- School data/login backend lives here (src/config.ts) - opening the connection
+         now (DNS + TLS) instead of waiting for the JS bundle to request it shaves real
+         time off the first live-data fetch, especially on a cold Apps Script start. -->
+    <link rel="preconnect" href="https://script.google.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   </head>
   <body class="bg-slate-50 text-slate-800 antialiased selection:bg-amber-400 selection:text-slate-900">
